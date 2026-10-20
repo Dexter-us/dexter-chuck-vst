@@ -31,6 +31,15 @@ jobs:
         run: >-
           ctest --test-dir native/dexter-chuck-vst/build-windows
           -C Release --output-on-failure
+      - name: Stage license documents
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $bundle = "native/dexter-chuck-vst/build-windows/DistributionLicenses"
+          New-Item -ItemType Directory -Force -Path "$bundle/third_party/licenses" | Out-Null
+          Copy-Item -LiteralPath "native/dexter-chuck-vst/LICENSE" -Destination "$bundle/LICENSE"
+          Copy-Item -LiteralPath "native/dexter-chuck-vst/THIRD_PARTY_NOTICES.md" -Destination "$bundle/THIRD_PARTY_NOTICES.md"
+          Copy-Item -Path "native/dexter-chuck-vst/third_party/licenses/*" -Destination "$bundle/third_party/licenses" -Recurse -Force
       - name: Upload Windows x64 VST3 bundles
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
@@ -39,4 +48,5 @@ jobs:
           path: |
             native/dexter-chuck-vst/build-windows/DexterChuckInstrument_artefacts/Release/VST3/*.vst3
             native/dexter-chuck-vst/build-windows/DexterChuckEffect_artefacts/Release/VST3/*.vst3
+            native/dexter-chuck-vst/build-windows/DistributionLicenses/**
           if-no-files-found: warn

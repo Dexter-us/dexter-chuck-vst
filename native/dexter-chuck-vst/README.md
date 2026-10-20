@@ -37,11 +37,16 @@ cmake --build native/dexter-chuck-vst/build-windows --config Release `
   --target DexterChuckInstrument_VST3 DexterChuckEffect_VST3 --parallel 4
 ```
 
-## Licensing and reuse
+## License and commercial use
 
+This project is licensed under **AGPL-3.0-only**; see `LICENSE`. The AGPL
+permits charging for copies and services. Recipients must retain their AGPL
+rights, and the license requires source availability in the situations it
+covers, including certain network use. It does not provide exclusive control
+over downstream redistribution.
+
+The project selects ChucK's MIT license option. JUCE 9.0.4 is used under its
+AGPLv3 option. Third-party license notices and the pinned JUCE software bill of
+materials are in `THIRD_PARTY_NOTICES.md` and `third_party/licenses/`.
 This project does not include Chuck Racks application code or Sonic Pi VST
-source. The Sonic Pi editor is a feature reference; its repository has no
-declared license, so this project implements its own editor and ChucK syntax
-highlighting. Review the licenses for JUCE, ChucK, and ChucK's bundled
-components before distributing binaries. This is an engineering implementation,
-not legal clearance.
+source; the editor is an independent implementation.
