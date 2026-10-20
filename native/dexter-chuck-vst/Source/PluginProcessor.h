@@ -3,6 +3,7 @@
 #include "ChuckRuntime.h"
 #include <juce_audio_utils/juce_audio_utils.h>
 
+#include <atomic>
 #include <mutex>
 #include <string>
 
@@ -48,6 +49,7 @@ private:
     mutable std::mutex codeMutex;
     std::string currentCode;
     std::string startupError;
+    std::atomic<bool> codeStopped { false };
 };
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter();

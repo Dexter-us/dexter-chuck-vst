@@ -64,6 +64,12 @@ void DexterChuckAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
     midiMessages.clear();
 
+    if (codeStopped.load(std::memory_order_acquire))
+    {
+        buffer.clear();
+        return;
+    }
+
     if (buffer.getNumChannels() < 2)
     {
         buffer.clear();
@@ -169,12 +175,14 @@ bool DexterChuckAudioProcessor::runCode(const std::string& code,
     setCurrentCode(code);
     if (!runtime.compile(code, sourcePath, error))
         return false;
+    codeStopped.store(false, std::memory_order_release);
     startupError.clear();
     return true;
 }
 
 void DexterChuckAudioProcessor::stopCode()
 {
+    codeStopped.store(true, std::memory_order_release);
     runtime.stop();
 }
 
