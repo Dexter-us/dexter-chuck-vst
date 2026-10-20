@@ -111,6 +111,15 @@ if(DEXTER_CHUCK_BUILD_TESTS)
             ChuckExamples
             juce::juce_audio_utils
             juce::juce_gui_extra)
+        if(MSVC)
+            target_compile_options(${plugin}Smoke PRIVATE
+                /bigobj /utf-8 /permissive- /Zc:__cplusplus)
+            target_compile_definitions(${plugin}Smoke PRIVATE
+                JUCE_WEB_BROWSER=0
+                JUCE_USE_CURL=0
+                JUCE_MODAL_LOOPS_PERMITTED=1
+                JUCE_VST3_CAN_REPLACE_VST2=0)
+        endif()
         add_test(NAME ${plugin}-processor COMMAND ${plugin}Smoke)
     endforeach()
 endif()
