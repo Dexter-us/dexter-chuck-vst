@@ -1,0 +1,5 @@
+/native/dexter-chuck-vst/build*/
+/generated-artifacts/
+*.obj
+*.pdb
+*.ilk
