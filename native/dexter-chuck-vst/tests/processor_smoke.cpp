@@ -30,6 +30,7 @@ int main()
 
         if (processor->isEffect())
         {
+            processor->stopCode();
             auto code = "adc.chan(0) => dac.chan(0); "
                         "adc.chan(1) => dac.chan(1); "
                         "while(true) 1::samp => now;";

@@ -26,13 +26,16 @@ bool ChuckRuntime::compile(const std::string& code, const std::string& sourcePat
 {
     std::lock_guard<std::mutex> compilerLock(compilerMutex);
     std::lock_guard<std::recursive_mutex> runtimeLock(runtimeMutex);
-    auto candidate = createEngine(error);
-    if (!candidate)
-        return false;
+    if (!engine)
+    {
+        engine = createEngine(error);
+        if (!engine)
+            return false;
+    }
 
     std::vector<t_CKUINT> shredIds;
     EM_reset_msg();
-    if (!candidate->compileCode(code, "", 1, FALSE, &shredIds, sourcePath))
+    if (!engine->compileCode(code, "", 1, FALSE, &shredIds, sourcePath))
     {
         error = EM_lasterror();
         if (error.empty())
@@ -40,8 +43,8 @@ bool ChuckRuntime::compile(const std::string& code, const std::string& sourcePat
         return false;
     }
 
-    // Replacing the whole VM also drops the prior script's persistent UGen graph.
-    engine = std::move(candidate);
+    // Compile into the active VM: ChucK starts a new shred while existing
+    // shreds and their UGen graphs continue running until Stop resets the VM.
     error.clear();
     return true;
 }

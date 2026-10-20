@@ -49,6 +49,8 @@ DexterChuckAudioProcessorEditor::DexterChuckAudioProcessorEditor(
     }
     runButton.setColour(juce::TextButton::buttonColourId, accent.darker(0.2f));
     runButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff101820));
+    runButton.setTooltip("Start a new ChucK shred; existing shreds keep running.");
+    stopButton.setTooltip("Stop all running ChucK shreds.");
     openButton.onClick = [this] { openScript(); };
     saveButton.onClick = [this] { saveScript(); };
     runButton.onClick = [this] { runScript(); };

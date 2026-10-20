@@ -33,6 +33,29 @@ int main()
         }
         require(peak > 0.05f && peak < 0.2f, "Instrument produced no expected audio");
 
+        synth.stop();
+        const std::string stepScript =
+            "Step voice => dac; 0.1 => voice.next; "
+            "while(true) 1::samp => now;";
+        require(synth.compile(stepScript, {}, error), "First layered shred did not compile");
+        std::fill(output.begin(), output.end(), 0.0f);
+        require(synth.process(nullptr, output.data(), 512), "First layered render failed");
+        const float oneShred = output.back();
+        require(std::abs(oneShred - 0.1f) < 0.001f,
+                "First ChucK shred did not produce its expected level");
+
+        require(synth.compile(stepScript, {}, error), "Second layered shred did not compile");
+        std::fill(output.begin(), output.end(), 0.0f);
+        require(synth.process(nullptr, output.data(), 512), "Second layered render failed");
+        require(std::abs(output.back() - 2.0f * oneShred) < 0.001f,
+                "Running ChucK shreds did not layer in the active VM");
+
+        synth.stop();
+        std::fill(output.begin(), output.end(), 0.0f);
+        require(synth.process(nullptr, output.data(), 512), "Stopped render failed");
+        require(std::abs(output.back()) < 0.00001f,
+                "Stopping the ChucK runtime did not clear its shreds");
+
         ChuckRuntime effect;
         require(effect.initialise(48000, 2, 2, error), "Effect runtime init failed");
         require(effect.compile("adc => dac; while(true) 1::samp => now;", {}, error),
@@ -46,8 +69,13 @@ int main()
         require(!effect.compile("this is not valid ChucK", {}, error),
                 "Invalid ChucK code was accepted");
         require(!error.empty(), "Compiler failure did not return a diagnostic");
-        std::cout << "Instrument audio, effect audio passthrough, and compiler "
-                     "diagnostics passed.\n";
+        std::fill(output.begin(), output.end(), 0.0f);
+        require(effect.process(input.data(), output.data(), 512),
+                "Effect render after a compile error failed");
+        require(std::abs(output.back() - 0.25f) < 0.001f,
+                "A failed compile stopped the existing ChucK shred");
+        std::cout << "Instrument audio, layered shreds, Stop reset, effect "
+                     "passthrough, and compiler diagnostics passed.\n";
         return 0;
     }
     catch (const std::exception& error)

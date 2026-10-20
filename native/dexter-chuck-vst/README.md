@@ -8,6 +8,9 @@ An independent ChucK-based VST3 project with two plug-ins:
 Both share a syntax-highlighted ChucK editor with Open, Save, Run, Stop, and a
 built-in example. The instrument and effect do not expose MIDI ports or host
 automation. ChucK's own sample-time scheduling and shreds remain available.
+Each successful Run starts a new shred in the active VM; previously running
+shreds continue and their audio is mixed together. Stop clears all running
+shreds. A compile error leaves the already-running shreds active.
 The editor buffer is saved with DAW project state; restored code is not
 automatically executed.
 
